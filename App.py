@@ -3,20 +3,14 @@ from email.message import EmailMessage
 import smtplib
 import traceback
 
-# -------------------------------------------------
-# PAGE CONFIG
-# -------------------------------------------------
+
 st.set_page_config(page_title="OCEAN Personality Test", layout="centered")
 
-# -------------------------------------------------
-# CALLBACK (MUST BE TOP-LEVEL)
-# -------------------------------------------------
+
 def set_response(q_idx, value):
     st.session_state.responses[q_idx] = value
 
-# -------------------------------------------------
-# SESSION STATE
-# -------------------------------------------------
+
 if "show_test" not in st.session_state:
     st.session_state.show_test = False
 
@@ -35,14 +29,10 @@ if "info" not in st.session_state:
 if "scores" not in st.session_state:
     st.session_state.scores = {"O":0,"C":0,"E":0,"A":0,"ES":0}
 
-# -------------------------------------------------
-# TITLE
-# -------------------------------------------------
+
 st.title("OCEAN Personality Assessment")
 
-# -------------------------------------------------
-# USER INFO FORM
-# -------------------------------------------------
+
 with st.form("info_form"):
     Name = st.text_input("Full Name")
     Age = st.number_input("Age", min_value=10, max_value=100, step=1)
@@ -73,34 +63,28 @@ if start:
 if not st.session_state.show_test:
     st.stop()
 
-# -------------------------------------------------
-# QUESTIONS (OCEAN)
-# -------------------------------------------------
+
 questions = [
     ("I enjoy meeting new people and being the center of attention.", "E"),
     ("I keep my tasks well-organized and complete work on time.", "C"),
     ("I stay calm even in stressful situations.", "ES"),
     ("I enjoy learning new things and exploring new ideas.", "O"),
     ("I care about others' feelings and try to help them.", "A"),
-
     ("I like participating in group discussions.", "E"),
     ("I am detail-oriented in my work.", "C"),
     ("I bounce back quickly after disappointments.", "ES"),
     ("I am curious and enjoy intellectual challenges.", "O"),
     ("I avoid conflicts and try to maintain harmony.", "A"),
-
     ("I feel energized when I'm around others.", "E"),
     ("I take responsibilities seriously.", "C"),
     ("I don’t get anxious easily when performing under pressure.", "ES"),
     ("I enjoy artistic or creative activities.", "O"),
     ("I enjoy cooperating with others on shared goals.", "A"),
-
     ("I am energetic and enthusiastic in group settings.", "E"),
     ("I plan ahead before starting a task.", "C"),
     ("I can keep my emotions in check during difficult times.", "ES"),
     ("I get excited about trying new experiences.", "O"),
     ("I am considerate and polite in interactions.", "A"),
-
     ("I enjoy being part of social or team activities.", "E"),
     ("I follow through on commitments consistently.", "C"),
     ("I handle setbacks without getting overly upset.", "ES"),
@@ -110,9 +94,7 @@ questions = [
 
 st.header("Rate each statement (1 = Strongly Disagree, 5 = Strongly Agree)")
 
-# -------------------------------------------------
-# QUESTION BUTTONS (CORRECT PATTERN)
-# -------------------------------------------------
+
 for idx, (q, _) in enumerate(questions):
     st.write(f"**{q}**")
 
@@ -131,7 +113,7 @@ for idx, (q, _) in enumerate(questions):
                 args=(idx, val)
             )
 
-            # RED INDICATOR (single source of truth)
+            
             if st.session_state.responses[idx] == val:
                 st.markdown(
                     """
@@ -145,9 +127,7 @@ for idx, (q, _) in enumerate(questions):
                     unsafe_allow_html=True
                 )
 
-# -------------------------------------------------
-# SUBMIT BUTTON (LOCKED UNTIL COMPLETE)
-# -------------------------------------------------
+
 all_answered = (
     len(st.session_state.responses) == len(questions)
     and all(v > 0 for v in st.session_state.responses.values())
@@ -155,9 +135,7 @@ all_answered = (
 
 submit = st.button("Submit Test", disabled=not all_answered)
 
-# -------------------------------------------------
-# SCORE CALCULATION
-# -------------------------------------------------
+
 if submit and not st.session_state.submitted:
     scores = {"O":0,"C":0,"E":0,"A":0,"ES":0}
 
@@ -167,9 +145,7 @@ if submit and not st.session_state.submitted:
     st.session_state.scores = scores
     st.session_state.submitted = True
 
-# -------------------------------------------------
-# EMAIL LOGIC
-# -------------------------------------------------
+
 if st.session_state.submitted and not st.session_state.email_sent:
     info = st.session_state.info
     scores = st.session_state.scores
@@ -200,7 +176,7 @@ Emotional Stability: {scores['ES']}
 
     try:
         sender = st.secrets["EMAIL"]
-        receiver = st.secrets["RECEIVER"]
+        receiver = Email
         password = st.secrets["EMAIL_PASSWORD"]
     except Exception:
         st.error("Missing EMAIL, RECEIVER, or EMAIL_PASSWORD in Streamlit secrets.")
@@ -223,11 +199,8 @@ Emotional Stability: {scores['ES']}
         st.code(traceback.format_exc())
         st.stop()
 
-# -------------------------------------------------
-# FINAL CONFIRMATION
-# -------------------------------------------------
 if st.session_state.email_sent:
     st.success(
-        "Your results have been securely sent to Tripti Chapper Careers Counselling.\n"
+        "Your results have been securely sent to your email Careers Counselling.\n"
         "Please contact them to receive your personalized report."
     )
